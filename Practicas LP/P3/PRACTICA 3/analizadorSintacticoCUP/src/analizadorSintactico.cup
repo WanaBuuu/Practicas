@@ -50,8 +50,8 @@ non terminal String programa, lista_instrucciones, instruccion, operando, operad
 /* Gramatica */
 start with programa;
 
-programa ::= lista_instrucciones:li {: for(int i = 0; i < ht.size();i++)
-                                        s+=ht.get(i)+":     .word 0\n";
+programa ::= lista_instrucciones:li {: for(Enumeration e = ht.keys(); e.hasMoreElements(); )
+                                        s+="var_"+e.nextElement()+":     .word 0\n";
                                        for(int i = 0; i < constantes.size(); i++)
                                         s2+= "  .word "+constantes.get(i)+"\n";
                                         RESULT = li + " .data \n" + s +                                                
@@ -78,7 +78,7 @@ instruccion ::= LEER VARIABLE:v PTOYCOMA {:
                 :}
                 |
                 MOSTRAR VARIABLE:v PTOYCOMA {:
-                    if(!ht.contains(v))
+                    if(!ht.containsKey(v))
                         System.out.println("Error!: No se ha definido la variable " + v + " en linea " + (vleft+1) + " columna " + (vright+1));
                     else {
                         RESULT ="lw   &a0, var_" + v + "\n" +
@@ -88,7 +88,7 @@ instruccion ::= LEER VARIABLE:v PTOYCOMA {:
                 :}
                 |
                 VARIABLE:v ASIGNACION operando:o1 operador:op operando:o2 PTOYCOMA {:
-                    if(!ht.contains(v)){
+                    if(!ht.containsKey(v)){
                         ht.put(v,"M"+contador);
                         contador++;}
                     
@@ -112,7 +112,7 @@ instruccion ::= LEER VARIABLE:v PTOYCOMA {:
                 :};
 
 operando ::= VARIABLE:v {: 
-                if(ht.contains(v))
+                if(ht.containsKey(v))
                     RESULT = "var_" + v;
                 else
                     System.out.println("Error!: No se ha definido la variable " + v + " en linea " + (vleft+1) + " columna " + (vright+1));
@@ -130,8 +130,6 @@ operador ::= SUMA {: RESULT = "ADD ";:}
             DIVISION {: RESULT = "DIV "; :}
             | 
             MULTIPLICACION {: RESULT = "MUL "; :};
-
-
 
 
 

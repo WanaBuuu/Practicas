@@ -209,8 +209,8 @@ class CUP$parser$actions {
 		int lileft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
 		int liright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		String li = (String)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
-		 for(int i = 0; i < ht.size();i++)
-                                        s+=ht.get(i)+":     .word 0\n";
+		 for(Enumeration e = ht.keys(); e.hasMoreElements(); )
+                                        s+="var_"+e.nextElement()+":     .word 0\n";
                                        for(int i = 0; i < constantes.size(); i++)
                                         s2+= "  .word "+constantes.get(i)+"\n";
                                         RESULT = li + " .data \n" + s +                                                
@@ -280,7 +280,7 @@ class CUP$parser$actions {
 		int vright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).right;
 		String v = (String)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
 		
-                    if(!ht.contains(v))
+                    if(!ht.containsKey(v))
                         System.out.println("Error!: No se ha definido la variable " + v + " en linea " + (vleft+1) + " columna " + (vright+1));
                     else {
                         RESULT ="lw   &a0, var_" + v + "\n" +
@@ -309,7 +309,7 @@ class CUP$parser$actions {
 		int o2right = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).right;
 		String o2 = (String)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
 		
-                    if(!ht.contains(v)){
+                    if(!ht.containsKey(v)){
                         ht.put(v,"M"+contador);
                         contador++;}
                     
@@ -366,7 +366,7 @@ class CUP$parser$actions {
 		int vright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		String v = (String)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
 		 
-                if(ht.contains(v))
+                if(ht.containsKey(v))
                     RESULT = "var_" + v;
                 else
                     System.out.println("Error!: No se ha definido la variable " + v + " en linea " + (vleft+1) + " columna " + (vright+1));
