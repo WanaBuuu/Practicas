@@ -1,0 +1,6 @@
+leer y;
+mostrar y;
+x <- y+2;
+leer x;
+leer z;
+mostrar z;

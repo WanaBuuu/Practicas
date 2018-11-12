@@ -1,0 +1,147 @@
+import java_cup.runtime.*;
+import java.io.*;
+import java.util.*;
+
+action code {:
+:};
+
+parser code {:
+    final int MAX = 15;
+    int contador = 0;
+    boolean error = false;
+    Vector constantes = new Vector();
+    Vector<String> variables = new Vector<String>();
+    Hashtable <String,String> ht= new Hashtable<>();
+    String s="",s2="";
+
+    public static void main(String[] arg){
+        if (arg.length!=1)
+          System.out.println("Debe dar el nombre del fichero de entrada como parametro");
+        else
+        {
+             String fileName=arg[0];
+             AnalizadorLexico miAnalizadorLexico=null;
+             parser parserObj=null;
+             Symbol x=null;
+
+             try{
+               miAnalizadorLexico =
+                 new AnalizadorLexico(new InputStreamReader(new FileInputStream(fileName)));
+
+             } catch (IOException e){
+               System.err.println("Fichero de entrada "+fileName+" no encontrado");
+               System.exit(0);
+             }
+             try{
+                parserObj = new parser(miAnalizadorLexico);
+                parserObj.parse();
+             } catch (Exception e) {
+                e.printStackTrace();
+                System.exit(0);
+             } 
+          } // end else
+    }
+:};
+
+terminal PTOYCOMA;
+terminal String LEER, VARIABLE, MOSTRAR, ASIGNACION, ABROCOMENTARIO, CIERROCOMENTARIO, COMENTARIOLINEA, NUMERO, SUMA, RESTA, MULTIPLICACION, DIVISION;
+non terminal String programa, lista_instrucciones, instruccion, operando, operador;
+
+/* Gramatica */
+start with programa;
+
+programa ::= lista_instrucciones:li {: for(Enumeration e = ht.keys(); e.hasMoreElements(); )
+                                        s+="var_"+e.nextElement()+":     .word 0\n";
+                                       for(int i = 0; i < constantes.size(); i++)
+                                        s2+= "  .word "+constantes.get(i)+"\n";
+                                        RESULT = li + " .data \n" + s +                                                
+                                                "constants: \n" + s2;
+                                        System.out.println(RESULT);
+                                    :};
+
+lista_instrucciones ::= instruccion:i {: RESULT = i; :} 
+                        | 
+                        instruccion:i lista_instrucciones:li{: RESULT = i + li; :};
+
+instruccion ::= LEER VARIABLE:v PTOYCOMA {:
+                    if(!ht.containsKey(v) && contador <= MAX){
+                        ht.put(v,"M"+contador);
+                        System.out.println("Variable "+v+" almacenada.");
+                        contador++;
+                        
+                        RESULT ="li    $v0, " + ht.get(v)+
+                                "\n syscall \n" +
+                                "sw    $v0, var_" + v + "\n\n";
+                    }
+                    else 
+                        System.out.println("Error!: En linea " + (vleft+1) + " columna " + (vright+1) + " La variable " + v + " ya existe" );
+                :}
+                |
+                MOSTRAR VARIABLE:v PTOYCOMA {:
+                    if(!ht.containsKey(v))
+                        System.out.println("Error!: No se ha definido la variable " + v + " en linea " + (vleft+1) + " columna " + (vright+1));
+                    else {
+                        RESULT ="lw   &a0, var_" + v + "\n" +
+                                "li   &v0, 1 \n" +
+                                "syscall \n\n";
+                    }
+                :}
+                |
+                VARIABLE:v ASIGNACION operando:o1 operador:op operando:o2 PTOYCOMA {:
+                    if(!ht.containsKey(v)){
+                        ht.put(v,"M"+contador);
+                        contador++;}
+                    
+                    RESULT ="lw    $t1, " + o1 + "\n" +
+                            "lw    $t2, " + o2 + "\n" +
+                            op + "$t0, $t1, $t2 \n" +
+                            "sw    $t0, var_" + v + "\n\n";
+                
+                :}
+                |
+                ABROCOMENTARIO CIERROCOMENTARIO {:
+                    System.out.println("ABRO COMENTARIO");
+                    System.out.println("CIERRO COMENTARIO");
+                :}
+                |
+                COMENTARIOLINEA {: :}
+                |
+                error PTOYCOMA:p
+                {: 
+                        System.out.println("Error en linea: " + (pleft+1));
+                :};
+
+operando ::= VARIABLE:v {: 
+                if(ht.containsKey(v))
+                    RESULT = "var_" + v;
+                else
+                    System.out.println("Error!: No se ha definido la variable " + v + " en linea " + (vleft+1) + " columna " + (vright+1));
+                    
+            :} 
+            | 
+            NUMERO:n {: 
+                constantes.add(n);
+                RESULT = "constantes+" + (constantes.indexOf(n) * 4); :};
+
+operador ::= SUMA {: RESULT = "ADD ";:} 
+            | 
+            RESTA {:RESULT = "SUB "; :}
+            | 
+            DIVISION {: RESULT = "DIV "; :}
+            | 
+            MULTIPLICACION {: RESULT = "MUL "; :};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
