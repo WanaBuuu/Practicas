@@ -1,0 +1,94 @@
+
+import java_cup.runtime.*;
+import java.io.*;
+import java.util.*;
+
+
+action code {:
+
+
+:};
+
+parser code {:
+
+public static void main(String[] arg){
+    if (arg.length!=1)
+      System.out.println("Debe dar el nombre del fichero de entrada como par�metro");
+    else
+    {
+         String fileName=arg[0];
+         Yylex miAnalizadorLexico=null;
+         parser parserObj=null;
+         Symbol x=null;
+         
+         try{
+           miAnalizadorLexico =
+             new Yylex(new InputStreamReader(new FileInputStream(fileName)));
+           
+         } catch (IOException e){
+           System.err.println("Fichero de entrada "+fileName+" no encontrado");
+           System.exit(0);
+         }
+         try{
+            parserObj = new parser(miAnalizadorLexico);
+            parserObj.parse();
+         } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(0);
+         }
+        
+         
+      } // end else
+	}
+	
+	vector<String> variables = new vector<String>();
+:};
+
+terminal PUNTOYCOMA;
+terminal String MOSTRAR, LEER, OPERACION, ID, ASIGNACION;
+terminal Integer NUMERO;
+non terminal programa, lista_lectura, lista_asignacion, lista_mostrar, lectura, asignar, muestra, lista_lineas, linea;
+
+/* precedence left -----;  */
+
+/* Gramatica */
+start with programa;
+
+programa ::= lista_lineas
+
+lista_lineas ::= linea | linea lista_lineas;
+
+linea ::= lista_lectura | lista_asignacion | lista_mostrar;
+
+lista_lectura ::= lectura PUNTOYCOMA | lectura lista_lectura;
+lista_asignacion ::= asignar PUNTOYCOMA | asignacion lista_asignacion;
+lista_mostrar ::= muestra PUNTOYCOMA| muestra lista_mostrar;
+
+lectura ::= LEER ID:id {: variables.addElement(id); :};
+
+asignar ::= ID:id ASIGNACION NUMERO OPERACION NUMERO {: variables.addElement(id); :} 
+			|
+			ID:id ASIGNACION NUMERO OPERACION ID:id1 {: if(variables.containst(id1)) variables.addElement(id) else System.out.println("Identificador no declarado previamente"); :}  
+			|
+			ID:id ASIGNACION ID:id1 OPERACION NUMERO {: if(variables.containst(id1)) variables.addElement(id) else System.out.println("Identificador no declarado previamente"); :}  
+			|
+			ID:id ASIGNACION ID:id1 OPERACION ID:id2 {: if(variables.containst(id1)&& variables.containst(id2)) variables.addElement(id); else System.out.println("Identificador no declarado previamente"); :} ; 
+			
+muestra ::= MOSTRAR ID:id {: if(!variables.containst(id))  System.out.println("Identificador no declarado previamente") :};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

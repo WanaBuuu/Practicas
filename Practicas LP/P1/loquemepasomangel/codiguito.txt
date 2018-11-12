@@ -1,0 +1,12 @@
+//Esto es una prueba
+//Esto es otro comentario
+
+int main(){
+    // Variable
+    int x = 5;
+
+return 0;
+}
+/**
+fjjjhkkhkkhjhjkhjhjhjj
+*/

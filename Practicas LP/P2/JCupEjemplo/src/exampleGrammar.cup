@@ -1,0 +1,61 @@
+
+import java_cup.runtime.*;
+import java.io.*;
+import java.util.*;
+
+
+action code {:
+
+
+:};
+
+parser code {:
+
+public static void main(String[] arg){
+    if (arg.length!=1)
+      System.out.println("Debe dar el nombre del fichero de entrada como par�metro");
+    else
+    {
+         String fileName=arg[0];
+         Yylex miAnalizadorLexico=null;
+         parser parserObj=null;
+         Symbol x=null;
+         
+         try{
+           miAnalizadorLexico =
+             new Yylex(new InputStreamReader(new FileInputStream(fileName)));
+           
+         } catch (IOException e){
+           System.err.println("Fichero de entrada "+fileName+" no encontrado");
+           System.exit(0);
+         }
+         try{
+            parserObj = new parser(miAnalizadorLexico);
+            parserObj.parse();
+         } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(0);
+         }
+        
+         
+      } // end else
+}
+:};
+
+
+terminal String PALABRA, OTRA_COSA;
+non terminal String programa,lista_palabras;
+
+/* precedence left -----;  */
+
+
+/* Gramatica */
+start with programa;
+
+programa ::= lista_palabras:lp {: System.out.println(lp); :};
+
+lista_palabras::= PALABRA:p {: RESULT=p; :}
+            | 
+	    PALABRA:P lista_palabras:lp {: RESULT = P+"\n"+lp; :};
+
+

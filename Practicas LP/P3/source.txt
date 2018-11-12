@@ -1,0 +1,6 @@
+a <- 7;
+leer b;
+c <- a+b;
+mostrar c;
+h <- p + 1
+mostrar x;

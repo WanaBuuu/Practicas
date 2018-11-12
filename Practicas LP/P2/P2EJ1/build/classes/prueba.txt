@@ -1,0 +1,3 @@
+mostrar a;
+leer a;
+a <- 2+ff;
