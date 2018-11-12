@@ -65,7 +65,7 @@ parser code {:
 
 terminal PTOYCOMA;
 terminal String LEER, VARIABLE, MOSTRAR, ASIGNACION, ABROCOMENTARIO, CIERROCOMENTARIO, COMENTARIOLINEA, NUMERO, SUMA, RESTA, MULTIPLICACION, DIVISION;
-non terminal String programa, lista_instrucciones, instruccion, operando, operador;
+non terminal String programa, lista_instrucciones, instruccion, operando, operador, expresion;
 
 /* Gramatica */
 start with programa;
@@ -107,16 +107,8 @@ instruccion ::= LEER VARIABLE:v PTOYCOMA {:
                     }
                 :}
                 |
-                VARIABLE:v ASIGNACION operando:o1 operador:op operando:o2 PTOYCOMA {:
-                    if(!ht.containsKey(v)){
-                        ht.put(v,"M"+contador);
-                        contador++;}
+                VARIABLE:v ASIGNACION expresion PTOYCOMA {:
                     
-                    RESULT ="lw    $t1, " + o1 + "\n" +
-                            "lw    $t2, " + o2 + "\n" +
-                            op + "$t0, $t1, $t2 \n" +
-                            "sw    $t0, var_" + v + "\n\n";
-                
                 :}
                 |
                 ABROCOMENTARIO CIERROCOMENTARIO {:
@@ -124,12 +116,23 @@ instruccion ::= LEER VARIABLE:v PTOYCOMA {:
                     System.out.println("CIERRO COMENTARIO");
                 :}
                 |
-                COMENTARIOLINEA {: :}
+                COMENTARIOLINEA {: System.out.println("Comentario en linea");:}
                 |
                 error PTOYCOMA:p
                 {: 
                         System.out.println("Error en linea: " + (pleft+1));
                 :};
+expresion ::= expresion OPERADOR expresion{:
+                   
+            :}
+            |
+            PA expresion PC {:
+            
+            :}
+            |
+            operando{:
+
+            :};
 
 operando ::= VARIABLE:v {: 
                 if(ht.containsKey(v))
