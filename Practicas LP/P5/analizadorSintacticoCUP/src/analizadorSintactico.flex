@@ -33,22 +33,22 @@ import java_cup.runtime.*;
         "<""-" {  return new Symbol(sym.ASIGNACION, yyline, yycolumn, yytext()); }
         "+"|"-"|"*"|"/" { 
                 
-                if(yytext().contains("+")){
-                    
-                    return new Symbol(sym.SUMA, yyline, yycolumn, yytext());
-                }
-                if(yytext().contains("-")){
-                    
-                    return new Symbol(sym.RESTA, yyline, yycolumn, yytext());
-                }
-                if(yytext().contains("*")){
-                   
-                    return new Symbol(sym.MULTIPLICACION, yyline, yycolumn, yytext());
-                }
-                if(yytext().contains("/")){
-                    
-                    return new Symbol(sym.DIVISION, yyline, yycolumn, yytext());
-                }
+            if(yytext().contains("+")){
+
+                return new Symbol(sym.SUMA, yyline, yycolumn, yytext());
+            }
+            if(yytext().contains("-")){
+
+                return new Symbol(sym.RESTA, yyline, yycolumn, yytext());
+            }
+            if(yytext().contains("*")){
+
+                return new Symbol(sym.MULTIPLICACION, yyline, yycolumn, yytext());
+            }
+            if(yytext().contains("/")){
+
+                return new Symbol(sym.DIVISION, yyline, yycolumn, yytext());
+            }
         }
 
         ";" { return new Symbol(sym.PTOYCOMA, yyline, yycolumn, yytext());  }

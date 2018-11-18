@@ -17,7 +17,7 @@ parser code {:
     class Expresion{
         private String ubi, cod_previo;
 
-        String getUbi(){
+        String getUbicacion(){
             return this.ubi;
         }
 
@@ -25,7 +25,7 @@ parser code {:
             return this.cod_previo;
         }
 
-        void setUbi (String ubi){
+        void setUbicacion (String ubi){
             this.ubi = ubi;
         }
 
@@ -120,18 +120,44 @@ instruccion ::= LEER VARIABLE:v PTOYCOMA {:
                 |
                 error PTOYCOMA:p
                 {: 
-                        System.out.println("Error en linea: " + (pleft+1));
+                    System.out.println("Error en linea: " + (pleft+1));
                 :};
-expresion ::= expresion OPERADOR expresion{:
-                   
-            :}
-            |
-            PA expresion PC {:
-            
-            :}
-            |
-            operando{:
+expresion ::= expresion: e1 OPERADOR: o expresion: e2{:
+                Expresion e = new Expresion();
+                String ubicacion = "var_Nosecual";  /*No se como coger el nombre esta variable*/
+                Strieng s = "";
+                
+                contador ++; // Para lo de los 15 registros
+                e.setUbicacion(ubicacion);
+                s += "lw $t1, " + e1.getUbicacion() + "\n" +
+                                "lw $t2, " + e2.getUbicacion() + "\n" +
+                                o + "$t1, $t2\n" +
+                                "sw $t0, temp\n" + 
+                                "lw $t1, temp\n" +
+                                "lw $t1, " + ubicacion;
+                e.setCod_Previo(s);
+                
+                /** Liberar memoria de los registros temporales*/
+                if (!e1.getCod_Previo().equals("")){
+                    contador --;
+                }
+                if (!e2.getCod_Previo().equals("")){
+                    contador --;
+                }
 
+                RESULT = e;
+ 
+            :}
+            |
+            PA expresion: e PC {:
+                /* aqui no se lo que tiene que hacer*/
+               
+            :}
+            |
+            operando: o{:
+                Expresion e = new Expresion();
+                e.setUbicacion(o);
+                RESULT = e;
             :};
 
 operando ::= VARIABLE:v {: 
@@ -139,7 +165,6 @@ operando ::= VARIABLE:v {:
                     RESULT = "var_" + v;
                 else
                     System.out.println("Error!: No se ha definido la variable " + v + " en linea " + (vleft+1) + " columna " + (vright+1));
-                    
             :} 
             | 
             NUMERO:n {: 
