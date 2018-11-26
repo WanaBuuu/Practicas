@@ -13,11 +13,12 @@ import java_cup.runtime.*;
 %state variable, asignacion, ptoycoma, operador, comentario
 
 %{
-    int contador;
+    int contador, parentesis;
 %}
 
 %init{
     contador = 0;
+    parentesis = 0;
 %init}
 
 
@@ -25,6 +26,8 @@ import java_cup.runtime.*;
 %%
     <YYINITIAL> {
         "//" { return new Symbol(sym.COMENTARIOLINEA, yyline, yycolumn, yytext()); }
+        "(" { return new Symbol(sym.PA, yyline, yycolumn, yytext()); }
+        ")" { return new Symbol(sym.PC, yyline, yycolumn, yytext()); }
         "leer" { return new Symbol(sym.LEER, yyline, yycolumn, yytext()); }
         "mostrar" { return new Symbol(sym.MOSTRAR, yyline, yycolumn, yytext()); }
         [:letter:] { return new Symbol(sym.VARIABLE, yyline, yycolumn, yytext()); }

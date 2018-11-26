@@ -14,26 +14,6 @@ parser code {:
     Hashtable <String,String> ht= new Hashtable<>();
     String s="",s2="";
 
-    class Expresion{
-        private String ubi, cod_previo;
-
-        String getUbicacion(){
-            return this.ubi;
-        }
-
-        String getCod_Previo(){
-            return this.cod_previo;
-        }
-
-        void setUbicacion (String ubi){
-            this.ubi = ubi;
-        }
-
-        void setCod_Previo (String cod_previo){
-            this.cod_previo = cod_previo;
-        }
-    }
-
     public static void main(String[] arg){
         if (arg.length!=1)
           System.out.println("Debe dar el nombre del fichero de entrada como parametro");
@@ -63,9 +43,10 @@ parser code {:
     }
 :};
 
-terminal PTOYCOMA;
+terminal PTOYCOMA, PA, PC;
 terminal String LEER, VARIABLE, MOSTRAR, ASIGNACION, ABROCOMENTARIO, CIERROCOMENTARIO, COMENTARIOLINEA, NUMERO, SUMA, RESTA, MULTIPLICACION, DIVISION;
-non terminal String programa, lista_instrucciones, instruccion, operando, operador, expresion;
+non terminal String programa, lista_instrucciones, instruccion, operando, operador;
+non terminal Expresion expresion;
 
 /* Gramatica */
 start with programa;
@@ -122,7 +103,7 @@ instruccion ::= LEER VARIABLE:v PTOYCOMA {:
                 {: 
                     System.out.println("Error en linea: " + (pleft+1));
                 :};
-expresion ::= expresion: e1 OPERADOR: o expresion: e2{:
+expresion ::= expresion: e1 operador: o expresion: e2{:
                 Expresion e = new Expresion();
                 String ubicacion = "var_Nosecual";  /*No se como coger el nombre esta variable*/
                 Strieng s = "";
@@ -149,12 +130,9 @@ expresion ::= expresion: e1 OPERADOR: o expresion: e2{:
  
             :}
             |
-            PA expresion: e PC {:
-                /* aqui no se lo que tiene que hacer*/
-               
-            :}
+            PA expresion:e PC {::}
             |
-            operando: o{:
+            operando:o {:
                 Expresion e = new Expresion();
                 e.setUbicacion(o);
                 RESULT = e;
@@ -167,7 +145,7 @@ operando ::= VARIABLE:v {:
                     System.out.println("Error!: No se ha definido la variable " + v + " en linea " + (vleft+1) + " columna " + (vright+1));
             :} 
             | 
-            NUMERO:n {: 
+            NUMERO:n {:
                 constantes.add(n);
                 RESULT = "constantes+" + (constantes.indexOf(n) * 4); :};
 
